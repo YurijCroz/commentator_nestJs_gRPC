@@ -16,28 +16,28 @@ export class Comment extends Model<Comment> {
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
-    field: 'commentId', // указываем название поля в таблице
+    field: 'commentId',
   })
   commentId: number;
 
   @Column({
     allowNull: true,
     type: DataType.INTEGER,
-    field: 'parentCommentId', // указываем название поля в таблице
+    field: 'parentCommentId',
   })
   parentCommentId: number;
 
   @Column({
     type: DataType.TEXT,
     allowNull: false,
-    field: 'content', // указываем название поля в таблице
+    field: 'content',
   })
   content: string;
 
   @Column({
     type: DataType.STRING(64),
     allowNull: true,
-    field: 'fileName', // указываем название поля в таблице
+    field: 'fileName',
   })
   fileName: string;
 
@@ -45,7 +45,7 @@ export class Comment extends Model<Comment> {
   @Column({
     allowNull: false,
     type: DataType.INTEGER,
-    field: 'userId', // указываем название поля в таблице
+    field: 'userId',
   })
   userId: number;
 
@@ -62,7 +62,7 @@ export class Comment extends Model<Comment> {
     type: DataType.DATE,
     allowNull: false,
     defaultValue: DataType.NOW,
-    field: 'createdAt', // указываем название поля в таблице
+    field: 'createdAt',
   })
   createdAt: Date;
 }

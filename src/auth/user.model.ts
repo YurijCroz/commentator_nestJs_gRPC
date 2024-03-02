@@ -8,14 +8,14 @@ export class User extends Model<User> {
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
-    field: 'userId', // указываем название поля в таблице
+    field: 'userId',
   })
   userId: number;
 
   @Column({
     type: DataType.STRING(64),
     allowNull: false,
-    field: 'userName', // указываем название поля в таблице
+    field: 'userName',
   })
   userName: string;
 
@@ -28,28 +28,28 @@ export class User extends Model<User> {
         msg: 'email is in an invalid format',
       },
     },
-    field: 'email', // указываем название поля в таблице
+    field: 'email',
   })
   email: string;
 
   @Column({
     type: DataType.STRING(256),
     allowNull: true,
-    field: 'homePage', // указываем название поля в таблице
+    field: 'homePage',
   })
   homePage: string;
 
   @Column({
     type: DataType.STRING(256),
     allowNull: false,
-    field: 'passwordHash', // указываем название поля в таблице
+    field: 'passwordHash',
   })
   passwordHash: string;
 
   @Column({
     type: DataType.TEXT,
     allowNull: true,
-    field: 'refreshToken', // указываем название поля в таблице
+    field: 'refreshToken',
   })
   refreshToken: string;
 
@@ -60,7 +60,7 @@ export class User extends Model<User> {
     type: DataType.DATE,
     allowNull: false,
     defaultValue: DataType.NOW,
-    field: 'createdAt', // указываем название поля в таблице
+    field: 'createdAt',
   })
   createdAt: Date;
 }
