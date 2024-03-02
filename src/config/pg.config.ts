@@ -1,5 +1,6 @@
 import { SequelizeModuleOptions } from '@nestjs/sequelize';
 import { User } from 'src/auth/user.model';
+import { Comment } from 'src/comment/comment.model';
 
 export const PgConfig: SequelizeModuleOptions = {
   dialect: 'postgres',
@@ -10,5 +11,5 @@ export const PgConfig: SequelizeModuleOptions = {
   database: 'postgres',
   autoLoadModels: true, // автоматическая загрузка моделей
   synchronize: true, // автоматическое создание таблиц при старте
-  models: [User],
+  models: [User, Comment],
 };

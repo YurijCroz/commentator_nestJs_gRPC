@@ -1,4 +1,5 @@
-import { Model, Column, Table, DataType } from 'sequelize-typescript';
+import { Model, Column, Table, DataType, HasMany } from 'sequelize-typescript';
+import { Comment } from 'src/comment/comment.model';
 
 @Table({ tableName: 'Users' })
 export class User extends Model<User> {
@@ -51,6 +52,9 @@ export class User extends Model<User> {
     field: 'refreshToken', // указываем название поля в таблице
   })
   refreshToken: string;
+
+  @HasMany(() => Comment, 'userId')
+  comments: Comment[];
 
   @Column({
     type: DataType.DATE,
