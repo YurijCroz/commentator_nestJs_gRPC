@@ -91,6 +91,7 @@ export class AuthService {
       email: user.email,
       userId: user.userId,
       userName: user.userName,
+      homePage: user.homePage,
     };
 
     return this.jwtService.sign(payload, {

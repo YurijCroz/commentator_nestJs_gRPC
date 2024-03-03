@@ -26,7 +26,9 @@ export class JwtAuthGuard implements CanActivate {
         });
       }
 
-      const user = this.jwtService.verify(token);
+      const user = this.jwtService.verify(token, {
+        secret: process.env.ACCESS_TOKEN_SECRET,
+      });
       req.user = user;
       return true;
     } catch (e) {
