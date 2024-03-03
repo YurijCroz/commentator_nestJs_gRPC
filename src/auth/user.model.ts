@@ -1,8 +1,14 @@
 import { Model, Column, Table, DataType, HasMany } from 'sequelize-typescript';
 import { Comment } from 'src/comment/comment.model';
 
+interface UserCreationAttrs {
+  email: string;
+  password: string;
+  userName: string;
+  homePage?: string;
+}
 @Table({ tableName: 'Users' })
-export class User extends Model<User> {
+export class User extends Model<User, UserCreationAttrs> {
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
@@ -42,9 +48,9 @@ export class User extends Model<User> {
   @Column({
     type: DataType.STRING(256),
     allowNull: false,
-    field: 'passwordHash',
+    field: 'password',
   })
-  passwordHash: string;
+  password: string;
 
   @Column({
     type: DataType.TEXT,

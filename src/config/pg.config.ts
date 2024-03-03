@@ -9,7 +9,7 @@ export const PgConfig: SequelizeModuleOptions = {
   username: 'postgres',
   password: 'postgres',
   database: 'postgres',
-  autoLoadModels: true, // автоматическая загрузка моделей
   synchronize: true, // автоматическое создание таблиц при старте
+  autoLoadModels: true, // автоматическая загрузка моделей
   models: [User, Comment],
 };
