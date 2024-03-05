@@ -18,3 +18,12 @@ export class AddCommentDto {
   })
   readonly content: string;
 }
+
+export class AddCommentGrpcDto extends AddCommentDto {
+  user: {
+    userId: number;
+    userName: string;
+    email: string;
+    homePage: string;
+  };
+}

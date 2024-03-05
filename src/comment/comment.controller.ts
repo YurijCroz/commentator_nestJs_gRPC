@@ -9,7 +9,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { AddCommentDto } from './dto/addComment.dto';
+import { AddCommentDto, AddCommentGrpcDto } from './dto/addComment.dto';
 import { CommentService } from './comment.service';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { JwtGrpcGuard } from 'src/auth/jwt-grpc-auth.guard';
@@ -23,10 +23,6 @@ interface IUser {
   homePage: string;
 }
 interface CustomRequest extends Request {
-  user: IUser;
-}
-
-interface AddCommentGrpcDto extends AddCommentDto {
   user: IUser;
 }
 
