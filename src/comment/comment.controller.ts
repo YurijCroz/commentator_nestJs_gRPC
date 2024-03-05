@@ -15,6 +15,9 @@ import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { JwtGrpcGuard } from 'src/auth/jwt-grpc-auth.guard';
 import { GrpcValidationPipe } from 'src/pipes/grpc-validation.pipe';
 import { Status } from '@grpc/grpc-js/build/src/constants';
+import { GetCommentsDto } from './dto/getComment.dto';
+import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from 'src/constants';
+import { SortDirection, SortType } from './interfaces/comment.interface';
 
 interface IUser {
   userId: number;
@@ -64,8 +67,19 @@ export class CommentController {
   }
 
   @GrpcMethod('CommentsService', 'GetComments')
-  async getCommentGRPC(dto: object) {
-    return dto;
+  @UsePipes(new GrpcValidationPipe())
+  async getCommentGRPC(dto: GetCommentsDto) {
+    const sort = (dto.sort || DEFAULT_SORT_BY) as SortType;
+    const sortDirect = (dto.sortDirect || DEFAULT_SORT_DIRECT) as SortDirection;
+    const page = dto.page || 1;
+    const limit = dto.limit || 25;
+    const options = { limit, offset: (page - 1) * limit };
+    const order = { sort, sortDirect };
+
+    const comments = await this.commentService.getComments(options, order);
+    const totalPages = await this.commentService.getTotalPage(limit);
+
+    return { comments, totalPages };
   }
 
   // REST

@@ -4,9 +4,10 @@ import { CommentController } from './comment.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Comment } from './comment.model';
+import { User } from 'src/auth/user.model';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Comment]), JwtModule],
+  imports: [SequelizeModule.forFeature([Comment, User]), JwtModule],
   providers: [CommentService],
   controllers: [CommentController],
 })
