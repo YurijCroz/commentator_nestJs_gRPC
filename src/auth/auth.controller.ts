@@ -13,6 +13,7 @@ import { RegistrationDto } from './dto/registration.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Status } from '@grpc/grpc-js/build/src/constants';
+import { GrpcValidationPipe } from 'src/pipes/grpc-validation.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -20,6 +21,7 @@ export class AuthController {
 
   // gRPC
   @GrpcMethod('UsersService', 'RegistrationUser')
+  @UsePipes(new GrpcValidationPipe())
   async registrationGRPC(dto: RegistrationDto) {
     const candidate = await this.authService.getUser({ email: dto.email });
     if (candidate) {
@@ -33,8 +35,8 @@ export class AuthController {
   }
 
   @GrpcMethod('UsersService', 'LoginUser')
+  @UsePipes(new GrpcValidationPipe())
   async loginGRPC(dto: AuthDto) {
-    console.log(dto);
     const user = await this.authService.getUser({ email: dto.email });
     if (!user) {
       throw new RpcException({ code: Status.NOT_FOUND });
@@ -49,6 +51,7 @@ export class AuthController {
   }
 
   @GrpcMethod('UsersService', 'RefreshToken')
+  @UsePipes(new GrpcValidationPipe())
   async refreshGRPC(dto: RefreshDto) {
     const user = await this.authService.getUser({
       refreshToken: dto.refreshToken,
