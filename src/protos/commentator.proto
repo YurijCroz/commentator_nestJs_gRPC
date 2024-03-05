@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package commentator;
+
+service UsersService {
+  rpc RegistrationUser(CreateUserRequest) returns (CreateUserResponse) {}
+  rpc LoginUser(LoginUserRequest) returns (TokenPairResponse) {}
+  rpc RefreshToken(RefreshTokenRequest) returns (TokenPairResponse) {}
+}
+
+message CreateUserRequest {
+  required string userName = 1;
+  required string email = 2;
+  required string password = 3;
+  string homePage = 4;
+}
+
+message CreateUserResponse {
+  string message = 1;
+}
+
+message LoginUserRequest {
+  required string email = 1;
+  required string password = 2;
+}
+
+message TokenPair {
+  string accessToken = 1;
+  string refreshToken = 2;
+}
+
+message TokenPairResponse {
+  TokenPair tokenPair = 1;
+}
+
+message RefreshTokenRequest {
+  required string refreshToken = 1;
+}
