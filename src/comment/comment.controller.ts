@@ -11,20 +11,68 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AddCommentDto } from './dto/addComment.dto';
 import { CommentService } from './comment.service';
+import { GrpcMethod, RpcException } from '@nestjs/microservices';
+import { JwtGrpcGuard } from 'src/auth/jwt-grpc-auth.guard';
+import { GrpcValidationPipe } from 'src/pipes/grpc-validation.pipe';
+import { Status } from '@grpc/grpc-js/build/src/constants';
 
+interface IUser {
+  userId: number;
+  userName: string;
+  email: string;
+  homePage: string;
+}
 interface CustomRequest extends Request {
-  user: {
-    userId: number;
-    userName: string;
-    email: string;
-    homePage: string;
-  };
+  user: IUser;
+}
+
+interface AddCommentGrpcDto extends AddCommentDto {
+  user: IUser;
 }
 
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
+  // gRPC
+  @GrpcMethod('CommentsService', 'AddComment')
+  @UseGuards(JwtGrpcGuard)
+  @UsePipes(new GrpcValidationPipe())
+  async addCommentGRPC(dto: AddCommentGrpcDto) {
+    try {
+      if (dto.parentCommentId) {
+        await this.commentService.getComment({
+          commentId: dto.parentCommentId,
+        });
+      }
+
+      const body = {
+        parentCommentId: dto.parentCommentId || null,
+        content: dto.content,
+        userId: dto.user.userId,
+      };
+
+      const comment = await this.commentService.addNewComment(body);
+
+      //@ts-ignore
+      comment.user = {
+        userName: dto.user.userName,
+        email: dto.user.email,
+        homePage: dto.user.homePage,
+      };
+
+      return comment;
+    } catch (error) {
+      throw new RpcException({ code: Status.INVALID_ARGUMENT });
+    }
+  }
+
+  @GrpcMethod('CommentsService', 'GetComments')
+  async getCommentGRPC(dto: object) {
+    return dto;
+  }
+
+  // REST
   @Get('getComments')
   async getComments() {}
 

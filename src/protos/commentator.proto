@@ -36,3 +36,50 @@ message TokenPairResponse {
 message RefreshTokenRequest {
   required string refreshToken = 1;
 }
+
+service CommentsService {
+  rpc AddComment(CreateCommentRequest) returns (Comment) {}
+  rpc GetComments(GetCommentsRequest) returns (GetCommentsResponse) {}
+}
+
+message CreateCommentRequest {
+  required string content = 1;
+  optional int32 parentCommentId = 2;
+}
+
+message Comment {
+  string createdAt = 1;
+  int32 commentId = 2;
+  string content = 3;
+  optional int32 parentCommentId = 4;
+  optional string fileName = 5;
+  User user = 6;
+}
+
+message User {
+  string userName = 1;
+  string email = 2;
+  optional string homePage = 3;
+}
+
+message Comments {
+  string createdAt = 1;
+  int32 commentId = 2;
+  string content = 3;
+  optional int32 parentCommentId = 4;
+  optional string fileName = 5;
+  User user = 6;
+  repeated Comments replies = 7;
+}
+
+message GetCommentsRequest {
+  optional int32 limit = 1;
+  optional int32 page = 2;
+  optional string sort = 3;
+  optional string sortDirect = 4;
+}
+
+message GetCommentsResponse {
+  int32 totalPages = 1;
+  repeated Comments comments = 2;
+}
