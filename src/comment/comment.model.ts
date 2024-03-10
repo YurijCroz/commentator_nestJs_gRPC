@@ -1,4 +1,9 @@
 import {
+  ApiProperty,
+  ApiPropertyOptional,
+  ApiResponseProperty,
+} from '@nestjs/swagger';
+import {
   Model,
   Column,
   Table,
@@ -11,6 +16,7 @@ import { User } from 'src/auth/user.model';
 
 @Table({ tableName: 'Comments' })
 export class Comment extends Model<Comment> {
+  @ApiProperty({ example: '1', description: 'Unique ID' })
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
@@ -20,6 +26,7 @@ export class Comment extends Model<Comment> {
   })
   commentId: number;
 
+  @ApiPropertyOptional({ example: '1', description: 'Unique ID or Null' })
   @Column({
     allowNull: true,
     type: DataType.INTEGER,
@@ -27,6 +34,7 @@ export class Comment extends Model<Comment> {
   })
   parentCommentId: number;
 
+  @ApiProperty({ example: 'Text content' })
   @Column({
     type: DataType.TEXT,
     allowNull: false,
@@ -34,6 +42,7 @@ export class Comment extends Model<Comment> {
   })
   content: string;
 
+  @ApiPropertyOptional({ example: 'file-name.webp' })
   @Column({
     type: DataType.STRING(64),
     allowNull: true,
@@ -49,15 +58,21 @@ export class Comment extends Model<Comment> {
   })
   userId: number;
 
+  @ApiResponseProperty({ type: () => User })
   @BelongsTo(() => User, 'userId')
   user: User;
 
+  @ApiResponseProperty({
+    type: 'array',
+    example: ['/* Nested comments */'],
+  })
   @HasMany(() => Comment, 'parentCommentId')
   replies: Comment[];
 
   @BelongsTo(() => Comment, 'parentCommentId')
   parentComment: Comment;
 
+  @ApiProperty({ example: new Date() })
   @Column({
     type: DataType.DATE,
     allowNull: false,

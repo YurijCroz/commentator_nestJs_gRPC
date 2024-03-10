@@ -14,7 +14,10 @@ import { RefreshDto } from './dto/refresh.dto';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Status } from '@grpc/grpc-js/build/src/constants';
 import { GrpcValidationPipe } from 'src/pipes/grpc-validation.pipe';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ISuccess, Success, TokenPair } from './interfaces/response.interfaces';
 
+@ApiTags('Auth users')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -64,9 +67,11 @@ export class AuthController {
   }
 
   // REST
+  @ApiOperation({ summary: 'User registration' })
+  @ApiResponse({ status: 201, type: Success })
   @Post('registration')
   @UsePipes(new ValidationPipe())
-  async registration(@Body() dto: RegistrationDto) {
+  async registration(@Body() dto: RegistrationDto): Promise<ISuccess> {
     const candidate = await this.authService.getUser({ email: dto.email });
     if (candidate) {
       throw new HttpException(
@@ -83,6 +88,8 @@ export class AuthController {
     return { message: 'success' };
   }
 
+  @ApiOperation({ summary: 'User login | to get a pair of tokens' })
+  @ApiResponse({ status: 200, type: TokenPair })
   @Post('login')
   @UsePipes(new ValidationPipe())
   async login(@Body() dto: AuthDto) {
@@ -102,6 +109,8 @@ export class AuthController {
     return { tokenPair };
   }
 
+  @ApiOperation({ summary: 'refresh tokens | to get a new pair of tokens' })
+  @ApiResponse({ status: 200, type: TokenPair })
   @Post('refresh')
   @UsePipes(new ValidationPipe())
   async refresh(@Body() dto: RefreshDto) {

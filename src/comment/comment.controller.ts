@@ -19,6 +19,14 @@ import { Status } from '@grpc/grpc-js/build/src/constants';
 import { GetCommentsDto } from './dto/getComment.dto';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from 'src/constants';
 import { SortDirection, SortType } from './interfaces/comment.interface';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiResponseProperty,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Comment } from './comment.model';
 
 interface IUser {
   userId: number;
@@ -26,10 +34,20 @@ interface IUser {
   email: string;
   homePage: string;
 }
+
 interface CustomRequest extends Request {
   user: IUser;
 }
 
+export class CommentResponse {
+  @ApiResponseProperty({ example: 1 })
+  totalPages: number;
+
+  @ApiResponseProperty({ type: [Comment] })
+  comments: Comment[];
+}
+
+@ApiTags('Comments')
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
@@ -84,6 +102,8 @@ export class CommentController {
   }
 
   // REST
+  @ApiOperation({ summary: 'Get comments' })
+  @ApiResponse({ status: 200, type: CommentResponse })
   @Get('getComments')
   async getComments(@Query() dto: GetCommentsDto) {
     const sort = (dto.sort || DEFAULT_SORT_BY) as SortType;
@@ -99,6 +119,9 @@ export class CommentController {
     return { comments, totalPages };
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Add comment' })
+  @ApiResponse({ status: 201, type: Comment })
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @Post('addComment')

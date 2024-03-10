@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Model, Column, Table, DataType, HasMany } from 'sequelize-typescript';
 import { Comment } from 'src/comment/comment.model';
 
@@ -18,6 +19,7 @@ export class User extends Model<User, UserCreationAttrs> {
   })
   userId: number;
 
+  @ApiProperty({ example: 'Kent', description: 'User name' })
   @Column({
     type: DataType.STRING(64),
     allowNull: false,
@@ -25,6 +27,10 @@ export class User extends Model<User, UserCreationAttrs> {
   })
   userName: string;
 
+  @ApiProperty({
+    example: 'example@gmail.com',
+    description: 'Unique e-mail address',
+  })
   @Column({
     type: DataType.STRING(128),
     allowNull: false,
@@ -38,6 +44,10 @@ export class User extends Model<User, UserCreationAttrs> {
   })
   email: string;
 
+  @ApiProperty({
+    example: 'https://github.com/example',
+    description: 'User home page',
+  })
   @Column({
     type: DataType.STRING(256),
     allowNull: true,
