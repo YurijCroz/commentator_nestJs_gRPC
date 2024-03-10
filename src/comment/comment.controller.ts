@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Req,
   UseGuards,
   UsePipes,
@@ -84,7 +85,19 @@ export class CommentController {
 
   // REST
   @Get('getComments')
-  async getComments() {}
+  async getComments(@Query() dto: GetCommentsDto) {
+    const sort = (dto.sort || DEFAULT_SORT_BY) as SortType;
+    const sortDirect = (dto.sortDirect || DEFAULT_SORT_DIRECT) as SortDirection;
+    const page = dto.page || 1;
+    const limit = dto.limit || 25;
+    const options = { limit, offset: (page - 1) * limit };
+    const order = { sort, sortDirect };
+
+    const comments = await this.commentService.getComments(options, order);
+    const totalPages = await this.commentService.getTotalPage(limit);
+
+    return { comments, totalPages };
+  }
 
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
