@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Comment } from './comment.model';
 import { IOptions, ISort } from './interfaces/comment.interface';
-import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from 'src/constants';
+import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from '../constants';
 import { Sequelize, literal } from 'sequelize';
 
 const defaultOrder: ISort = {

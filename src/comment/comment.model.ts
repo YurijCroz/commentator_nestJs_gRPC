@@ -12,7 +12,7 @@ import {
   BelongsTo,
   HasMany,
 } from 'sequelize-typescript';
-import { User } from 'src/auth/user.model';
+import { User } from '../auth/user.model';
 
 @Table({ tableName: 'Comments' })
 export class Comment extends Model<Comment> {

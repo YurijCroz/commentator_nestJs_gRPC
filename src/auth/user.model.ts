@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Model, Column, Table, DataType, HasMany } from 'sequelize-typescript';
-import { Comment } from 'src/comment/comment.model';
+import { Comment } from '../comment/comment.model';
 
 interface UserCreationAttrs {
   email: string;

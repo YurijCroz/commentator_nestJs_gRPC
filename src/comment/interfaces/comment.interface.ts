@@ -1,4 +1,4 @@
-import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from 'src/constants';
+import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from '../../constants';
 
 export interface IOptions {
   limit: number;

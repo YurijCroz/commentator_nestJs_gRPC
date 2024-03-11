@@ -13,7 +13,7 @@ import { RegistrationDto } from './dto/registration.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Status } from '@grpc/grpc-js/build/src/constants';
-import { GrpcValidationPipe } from 'src/pipes/grpc-validation.pipe';
+import { GrpcValidationPipe } from '../pipes/grpc-validation.pipe';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISuccess, Success, TokenPair } from './interfaces/response.interfaces';
 

@@ -9,15 +9,15 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AddCommentDto, AddCommentGrpcDto } from './dto/addComment.dto';
 import { CommentService } from './comment.service';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
-import { JwtGrpcGuard } from 'src/auth/jwt-grpc-auth.guard';
-import { GrpcValidationPipe } from 'src/pipes/grpc-validation.pipe';
+import { JwtGrpcGuard } from '../auth/jwt-grpc-auth.guard';
+import { GrpcValidationPipe } from '../pipes/grpc-validation.pipe';
 import { Status } from '@grpc/grpc-js/build/src/constants';
 import { GetCommentsDto } from './dto/getComment.dto';
-import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from 'src/constants';
+import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from '../constants';
 import { SortDirection, SortType } from './interfaces/comment.interface';
 import {
   ApiBearerAuth,
