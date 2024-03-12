@@ -1,9 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Comment } from './comment.model';
-import { IOptions, ISort } from './interfaces/comment.interface';
+import {
+  IOptions,
+  ISort,
+  SortDirection,
+  SortType,
+} from './interfaces/comment.interface';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from '../constants';
 import { Sequelize, literal } from 'sequelize';
+import { GetCommentsDto } from './dto/getComment.dto';
+import { AddCommentGrpcDto } from './dto/addComment.dto';
 
 const defaultOrder: ISort = {
   sort: DEFAULT_SORT_BY,
@@ -25,7 +32,50 @@ export class CommentService {
   constructor(
     @InjectModel(Comment) private readonly commentRepository: typeof Comment,
   ) {}
+  // Services
+  async getCommentService(dto: GetCommentsDto) {
+    const sort = (dto.sort || DEFAULT_SORT_BY) as SortType;
+    const sortDirect = (dto.sortDirect || DEFAULT_SORT_DIRECT) as SortDirection;
+    const page = dto.page || 1;
+    const limit = dto.limit || 25;
+    const options = { limit, offset: (page - 1) * limit };
+    const order = { sort, sortDirect };
 
+    const comments = await this.getComments(options, order);
+    const totalPages = await this.getTotalPage(limit);
+
+    return { comments, totalPages };
+  }
+
+  async addCommentService(dto: AddCommentGrpcDto) {
+    try {
+      if (dto.parentCommentId) {
+        await this.getComment({
+          commentId: dto.parentCommentId,
+        });
+      }
+
+      const body = {
+        parentCommentId: dto.parentCommentId || null,
+        content: dto.content,
+        userId: dto.user.userId,
+      };
+
+      const comment = await this.addNewComment(body);
+
+      //@ts-ignore
+      comment.user = {
+        userName: dto.user.userName,
+        email: dto.user.email,
+        homePage: dto.user.homePage,
+      };
+      return comment;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Helpers
   async getTotalPage(limit: number) {
     const totalCount = await this.countComments();
 
@@ -57,7 +107,6 @@ export class CommentService {
   }
 
   // Repository
-
   async addNewComment(body: any) {
     const comment = await this.commentRepository.create({
       ...body,

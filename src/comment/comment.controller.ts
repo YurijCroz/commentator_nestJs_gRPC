@@ -17,8 +17,6 @@ import { JwtGrpcGuard } from '../auth/jwt-grpc-auth.guard';
 import { GrpcValidationPipe } from '../pipes/grpc-validation.pipe';
 import { Status } from '@grpc/grpc-js/build/src/constants';
 import { GetCommentsDto } from './dto/getComment.dto';
-import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from '../constants';
-import { SortDirection, SortType } from './interfaces/comment.interface';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -58,28 +56,7 @@ export class CommentController {
   @UsePipes(new GrpcValidationPipe())
   async addCommentGRPC(dto: AddCommentGrpcDto) {
     try {
-      if (dto.parentCommentId) {
-        await this.commentService.getComment({
-          commentId: dto.parentCommentId,
-        });
-      }
-
-      const body = {
-        parentCommentId: dto.parentCommentId || null,
-        content: dto.content,
-        userId: dto.user.userId,
-      };
-
-      const comment = await this.commentService.addNewComment(body);
-
-      //@ts-ignore
-      comment.user = {
-        userName: dto.user.userName,
-        email: dto.user.email,
-        homePage: dto.user.homePage,
-      };
-
-      return comment;
+      return await this.commentService.addCommentService(dto);
     } catch (error) {
       throw new RpcException({ code: Status.INVALID_ARGUMENT });
     }
@@ -88,17 +65,7 @@ export class CommentController {
   @GrpcMethod('CommentsService', 'GetComments')
   @UsePipes(new GrpcValidationPipe())
   async getCommentGRPC(dto: GetCommentsDto) {
-    const sort = (dto.sort || DEFAULT_SORT_BY) as SortType;
-    const sortDirect = (dto.sortDirect || DEFAULT_SORT_DIRECT) as SortDirection;
-    const page = dto.page || 1;
-    const limit = dto.limit || 25;
-    const options = { limit, offset: (page - 1) * limit };
-    const order = { sort, sortDirect };
-
-    const comments = await this.commentService.getComments(options, order);
-    const totalPages = await this.commentService.getTotalPage(limit);
-
-    return { comments, totalPages };
+    return await this.commentService.getCommentService(dto);
   }
 
   // REST
@@ -106,17 +73,7 @@ export class CommentController {
   @ApiResponse({ status: 200, type: CommentResponse })
   @Get('getComments')
   async getComments(@Query() dto: GetCommentsDto) {
-    const sort = (dto.sort || DEFAULT_SORT_BY) as SortType;
-    const sortDirect = (dto.sortDirect || DEFAULT_SORT_DIRECT) as SortDirection;
-    const page = dto.page || 1;
-    const limit = dto.limit || 25;
-    const options = { limit, offset: (page - 1) * limit };
-    const order = { sort, sortDirect };
-
-    const comments = await this.commentService.getComments(options, order);
-    const totalPages = await this.commentService.getTotalPage(limit);
-
-    return { comments, totalPages };
+    return await this.commentService.getCommentService(dto);
   }
 
   @ApiBearerAuth()
@@ -126,25 +83,11 @@ export class CommentController {
   @UsePipes(new ValidationPipe())
   @Post('addComment')
   async addComment(@Req() req: CustomRequest, @Body() dto: AddCommentDto) {
-    if (dto.parentCommentId) {
-      await this.commentService.getComment({ commentId: dto.parentCommentId });
-    }
-
-    const body = {
-      parentCommentId: dto.parentCommentId || null,
-      content: dto.content,
-      userId: req.user.userId,
+    const queryData: AddCommentGrpcDto = {
+      ...dto,
+      user: req.user,
     };
 
-    const comment = await this.commentService.addNewComment(body);
-
-    //@ts-ignore
-    comment.user = {
-      userName: req.user.userName,
-      email: req.user.email,
-      homePage: req.user.homePage,
-    };
-
-    return comment;
+    return await this.commentService.addCommentService(queryData);
   }
 }
