@@ -32,7 +32,7 @@ export class Comment extends Model<Comment> {
     type: DataType.INTEGER,
     field: 'parentCommentId',
   })
-  parentCommentId: number;
+  parentCommentId: number | null;
 
   @ApiProperty({ example: 'Text content' })
   @Column({
@@ -48,7 +48,7 @@ export class Comment extends Model<Comment> {
     allowNull: true,
     field: 'fileName',
   })
-  fileName: string;
+  fileName: string | null;
 
   @ForeignKey(() => User)
   @Column({
@@ -70,7 +70,7 @@ export class Comment extends Model<Comment> {
   replies: Comment[];
 
   @BelongsTo(() => Comment, 'parentCommentId')
-  parentComment: Comment;
+  parentComment: Comment | undefined;
 
   @ApiProperty({ example: new Date() })
   @Column({

@@ -8,7 +8,7 @@ import {
   SortType,
 } from './interfaces/comment.interface';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from '../constants';
-import { Sequelize, literal } from 'sequelize';
+import { Sequelize, literal, Op } from 'sequelize';
 import { GetCommentsDto } from './dto/getComment.dto';
 import { AddCommentGrpcDto } from './dto/addComment.dto';
 
@@ -133,8 +133,7 @@ export class CommentService {
 
   async countComments() {
     const totalCount = await this.commentRepository.count({
-      //@ts-ignore
-      where: { parentCommentId: { [Sequelize.Op.is]: null } },
+      where: { parentCommentId: { [Op.is]: null } },
     });
 
     return totalCount;
@@ -185,7 +184,6 @@ export class CommentService {
 
     const comments = await this.commentRepository.findAll({
       attributes: commentAtt,
-      //@ts-ignore
       where: { parentCommentId },
       ...options,
       include,
