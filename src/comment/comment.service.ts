@@ -26,35 +26,9 @@ export class CommentService {
     @InjectModel(Comment) private readonly commentRepository: typeof Comment,
   ) {}
 
-  async addNewComment(body: any) {
-    const comment = await this.commentRepository.create({
-      ...body,
-    });
-
-    return comment.toJSON();
-  }
-
-  async getComment(where: object) {
-    const comment = await this.commentRepository.findOne({
-      where: { ...where },
-      raw: true,
-    });
-
-    if (!comment) {
-      throw new HttpException(
-        'This comment does not exist',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    return comment;
-  }
-
   async getTotalPage(limit: number) {
-    const totalCount = await Comment.count({
-      //@ts-ignore
-      where: { parentCommentId: { [Sequelize.Op.is]: null } },
-    });
+    const totalCount = await this.countComments();
+
     return Math.ceil(totalCount / limit);
   }
 
@@ -80,6 +54,41 @@ export class CommentService {
     }
 
     return nextReplies;
+  }
+
+  // Repository
+
+  async addNewComment(body: any) {
+    const comment = await this.commentRepository.create({
+      ...body,
+    });
+
+    return comment.toJSON();
+  }
+
+  async getComment(where: object) {
+    const comment = await this.commentRepository.findOne({
+      where: { ...where },
+      raw: true,
+    });
+
+    if (!comment) {
+      throw new HttpException(
+        'This comment does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return comment;
+  }
+
+  async countComments() {
+    const totalCount = await Comment.count({
+      //@ts-ignore
+      where: { parentCommentId: { [Sequelize.Op.is]: null } },
+    });
+
+    return totalCount;
   }
 
   async findAllComments(
