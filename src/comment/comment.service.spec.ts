@@ -6,7 +6,9 @@ describe('CommentService', () => {
   let commentRepositoryMock: any;
 
   beforeEach(async () => {
-    commentRepositoryMock = {};
+    commentRepositoryMock = {
+      findOne: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -61,6 +63,90 @@ describe('CommentService', () => {
 
         expect(result).toEqual(expectedTotalPage);
       }
+    });
+  });
+
+  describe('addCommentService', () => {
+    it('should be defined', () => {
+      expect(service).toBeDefined();
+    });
+
+    it('should return a comment when addCommentService is called', async () => {
+      const fakeComment = {
+        content: 'Test comment',
+        parentCommentId: null,
+      };
+      const fakeUser = {
+        userId: 1,
+        userName: 'TestName',
+        email: 'test@test.com',
+        homePage: 'https://test.com',
+      };
+      const mockComment = {
+        ...fakeComment,
+        commentId: 1,
+        fileName: null,
+        createdAt: new Date(),
+        userId: 1,
+      };
+      const expectedComment = {
+        ...mockComment,
+        user: { ...fakeUser },
+      };
+
+      //@ts-ignore
+      jest.spyOn(service, 'addNewComment').mockResolvedValue(mockComment);
+
+      const result = await service.addCommentService({
+        ...fakeComment,
+        user: fakeUser,
+      });
+      //@ts-ignore
+      delete expectedComment.user.userId;
+
+      expect(result).toEqual(expectedComment);
+    });
+
+    it('should return a sub comment when addCommentService is called', async () => {
+      const fakeComment = {
+        content: 'Test comment',
+        parentCommentId: 1,
+      };
+      const fakeUser = {
+        userId: 1,
+        userName: 'TestName',
+        email: 'test@test.com',
+        homePage: 'https://test.com',
+      };
+      const mockComment = {
+        ...fakeComment,
+        commentId: 2,
+        fileName: null,
+        createdAt: new Date(),
+        userId: 1,
+      };
+      const expectedComment = {
+        ...mockComment,
+        user: { ...fakeUser },
+      };
+      const mockParentComment = {
+        ...mockComment,
+        commentId: 1,
+        parentCommentId: null,
+      };
+
+      commentRepositoryMock.findOne.mockResolvedValue(mockParentComment);
+      //@ts-ignore
+      jest.spyOn(service, 'addNewComment').mockResolvedValue(mockComment);
+
+      const result = await service.addCommentService({
+        ...fakeComment,
+        user: fakeUser,
+      });
+      //@ts-ignore
+      delete expectedComment.user.userId;
+
+      expect(result).toEqual(expectedComment);
     });
   });
 });

@@ -12,7 +12,7 @@ export class AddCommentDto {
   @IsOptional()
   @IsNumber()
   @IsPositive({ message: 'Parent comment ID should be a positive number' })
-  readonly parentCommentId: number;
+  readonly parentCommentId: number | null;
 
   @ApiProperty({ example: 'Text content' })
   @IsString({ message: 'Should be a string' })
