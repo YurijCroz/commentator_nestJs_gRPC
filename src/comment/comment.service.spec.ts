@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommentService } from './comment.service';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 describe('CommentService', () => {
   let service: CommentService;
@@ -21,10 +22,6 @@ describe('CommentService', () => {
   });
 
   describe('getTotalPage', () => {
-    it('should be defined', () => {
-      expect(service).toBeDefined();
-    });
-
     it('should return the correct total page count (fixed)', async () => {
       const totalCount = 20;
       const limit = 5;
@@ -67,10 +64,6 @@ describe('CommentService', () => {
   });
 
   describe('addCommentService', () => {
-    it('should be defined', () => {
-      expect(service).toBeDefined();
-    });
-
     it('should return a comment when addCommentService is called', async () => {
       const fakeComment = {
         content: 'Test comment',
@@ -147,6 +140,38 @@ describe('CommentService', () => {
       delete expectedComment.user.userId;
 
       expect(result).toEqual(expectedComment);
+    });
+  });
+
+  describe('getComment', () => {
+    it('should return a comment', async () => {
+      const mockComment = {
+        content: 'Test comment',
+        parentCommentId: null,
+        commentId: 1,
+        fileName: null,
+        createdAt: new Date(),
+        userId: 1,
+      };
+
+      commentRepositoryMock.findOne.mockResolvedValue(mockComment);
+
+      const comment = await service.getComment({ commentId: 1 });
+
+      expect(comment).toEqual(mockComment);
+    });
+
+    it('should return a error', async () => {
+      commentRepositoryMock.findOne.mockResolvedValue(null);
+      try {
+        await service.getComment({ commentId: 1 });
+
+        fail('Expected getCommentPromise to throw an error');
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+        expect(error.message).toBe('This comment does not exist');
+      }
     });
   });
 });
