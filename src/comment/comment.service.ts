@@ -132,7 +132,7 @@ export class CommentService {
   }
 
   async countComments() {
-    const totalCount = await Comment.count({
+    const totalCount = await this.commentRepository.count({
       //@ts-ignore
       where: { parentCommentId: { [Sequelize.Op.is]: null } },
     });
@@ -183,7 +183,7 @@ export class CommentService {
       ? [currentOrder, [literal('"replies"."createdAt"'), 'DESC']]
       : [currentOrder];
 
-    const comments = await Comment.findAll({
+    const comments = await this.commentRepository.findAll({
       attributes: commentAtt,
       //@ts-ignore
       where: { parentCommentId },
