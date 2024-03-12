@@ -34,10 +34,13 @@ export class AuthService {
   }
 
   async updateUserById(id: number, body: object) {
-    const [updatedCount, [updatedUser]] = await User.update(body, {
-      where: { userId: id },
-      returning: true,
-    });
+    const [updatedCount, [updatedUser]] = await this.userRepository.update(
+      body,
+      {
+        where: { userId: id },
+        returning: true,
+      },
+    );
 
     if (updatedCount < 1) {
       throw new HttpException(
