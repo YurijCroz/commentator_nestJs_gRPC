@@ -12,4 +12,5 @@ export const PgConfig: SequelizeModuleOptions = {
   synchronize: true, // автоматическое создание таблиц при старте
   autoLoadModels: true, // автоматическая загрузка моделей
   models: [User, Comment],
+  logging: false,
 };
