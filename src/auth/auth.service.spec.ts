@@ -143,4 +143,33 @@ describe('AuthService', () => {
       }
     });
   });
+
+  describe('passwordCompare & passwordHash', () => {
+    it('should return true', async () => {
+      const pass = 'TESTter88';
+      const hashPassword = await service.passwordHash(pass);
+      expect(pass).not.toBe(hashPassword);
+
+      const result = await service.passwordCompare(pass, hashPassword);
+
+      expect(result).toBeTruthy();
+      expect(result).toBe(true);
+    });
+
+    it('should catch error', async () => {
+      try {
+        const pass = 'TESTter88';
+        const hashPassword = await service.passwordHash(pass);
+        expect(pass).not.toBe(hashPassword);
+
+        await service.passwordCompare('1234', hashPassword);
+
+        fail('Expected passwordCompare to throw an error');
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+        expect(error.message).toBe('Invalid email or password');
+      }
+    });
+  });
 });
