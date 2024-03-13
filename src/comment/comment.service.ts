@@ -41,8 +41,10 @@ export class CommentService {
     const options = { limit, offset: (page - 1) * limit };
     const order = { sort, sortDirect };
 
-    const comments = await this.getComments(options, order);
-    const totalPages = await this.getTotalPage(limit);
+    const [totalPages, comments] = await Promise.all([
+      this.getTotalPage(limit),
+      this.getComments(options, order),
+    ]);
 
     return { comments, totalPages };
   }
@@ -85,9 +87,11 @@ export class CommentService {
   async getComments(options: IOptions, order: ISort) {
     const comments = await this.findAllComments(null, options, order);
 
-    for (const comment of comments) {
-      comment.replies = await this.recursiveGetComments(comment);
-    }
+    await Promise.all(
+      Array.from(comments, async (comment) => {
+        comment.replies = await this.recursiveGetComments(comment);
+      }),
+    );
 
     return comments;
   }
@@ -95,13 +99,17 @@ export class CommentService {
   async recursiveGetComments(reply: Comment) {
     const nextReplies = await this.findAllComments(reply.commentId);
 
-    for (const nextReply of nextReplies) {
-      if (nextReply.replies.length) {
-        for (const reply of nextReply.replies) {
-          reply.replies = await this.recursiveGetComments(reply);
+    await Promise.all(
+      Array.from(nextReplies, async (nextReply) => {
+        if (nextReply.replies.length) {
+          await Promise.all(
+            Array.from(nextReply.replies, async (reply) => {
+              reply.replies = await this.recursiveGetComments(reply);
+            }),
+          );
         }
-      }
-    }
+      }),
+    );
 
     return nextReplies;
   }
