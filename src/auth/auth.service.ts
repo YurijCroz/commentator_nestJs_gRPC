@@ -23,10 +23,7 @@ export class AuthService {
     const user = this.userRepository.create({
       email: body.email,
       userName: body.userName,
-      password: await bcrypt.hash(
-        body.password,
-        Number(process.env.SALT_ROUNDS),
-      ),
+      password: await this.passwordHash(body.password),
       homePage: body.homePage,
     });
 
@@ -52,6 +49,10 @@ export class AuthService {
     return updatedUser;
   }
 
+  async passwordHash(pass: string) {
+    return await bcrypt.hash(pass, Number(process.env.SALT_ROUNDS));
+  }
+
   async passwordCompare(pass1: string, pass2: string) {
     const passwordCompare = await bcrypt.compare(pass1, pass2);
 
@@ -61,6 +62,8 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    return passwordCompare;
   }
 
   async getNewTokenPair(

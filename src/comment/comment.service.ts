@@ -8,7 +8,7 @@ import {
   SortType,
 } from './interfaces/comment.interface';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_DIRECT } from '../constants';
-import { Sequelize, literal, Op } from 'sequelize';
+import { literal, Op } from 'sequelize';
 import { GetCommentsDto } from './dto/getComment.dto';
 import { AddCommentGrpcDto } from './dto/addComment.dto';
 
